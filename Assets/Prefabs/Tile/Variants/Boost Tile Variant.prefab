@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Boost Tile Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 4482221974004190880, guid: dae75c9031a5e5c408db6959ad6c3801, type: 3}
+      propertyPath: m_TagString
+      value: BoostTile
+      objectReference: {fileID: 0}
     - target: {fileID: 6160288823691915265, guid: dae75c9031a5e5c408db6959ad6c3801, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.085518

@@ -4,8 +4,12 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Ground
   - NormalTile
+  - StickyTile
+  - BoostTile
+  - BurningTile
+  - EmptyTile
+  - SuppliesTile
   layers:
   - Default
   - TransparentFX
