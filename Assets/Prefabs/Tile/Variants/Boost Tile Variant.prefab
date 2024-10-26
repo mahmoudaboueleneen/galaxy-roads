@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4141855652150352851, guid: dae75c9031a5e5c408db6959ad6c3801, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: d1568d9b835644948837813a16d1d058, type: 2}
     - target: {fileID: 4482221974004190880, guid: dae75c9031a5e5c408db6959ad6c3801, type: 3}
       propertyPath: m_Name
       value: Boost Tile Variant

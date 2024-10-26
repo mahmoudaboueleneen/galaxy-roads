@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4141855652150352851, guid: dae75c9031a5e5c408db6959ad6c3801, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4437637572275347407, guid: dae75c9031a5e5c408db6959ad6c3801, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4482221974004190880, guid: dae75c9031a5e5c408db6959ad6c3801, type: 3}
       propertyPath: m_Name
       value: Empty Tile Variant

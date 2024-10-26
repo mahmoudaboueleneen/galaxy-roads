@@ -16,7 +16,7 @@ public class TileManager : MonoBehaviour
 
     private List<GameObject> tiles;
 
-    private const int TILES_ON_SCREEN = 30;
+    private const int TILES_ON_SCREEN = 90;
     private const int TILES_PER_LANE = 5;
     private const float SLOW_SPEED = 2.5f;
     private const float NORMAL_SPEED = 5f;
@@ -81,6 +81,9 @@ public class TileManager : MonoBehaviour
         GameObject newTilePrefab = GetRandomTilePrefab();
         GameObject newTile = Instantiate(newTilePrefab, spawnPosition, Quaternion.identity);
 
+        TileScript tileScriptComponent = newTile.GetComponent<TileScript>();
+        tileScriptComponent.laneIndex = laneIndex;
+
         tiles.Add(newTile);
     }
 
@@ -95,8 +98,17 @@ public class TileManager : MonoBehaviour
             tile.transform.position += moveSpeed * Time.deltaTime * Vector3.back;
     }
 
-    public void RemoveTileFromList(GameObject tile)
+    public void DestroyAndReplaceTile(GameObject tile)
     {
         tiles.Remove(tile);
+        
+        if (tile.TryGetComponent<TileScript>(out var tileScriptComponent))
+        {
+            // Spawn a new tile in the same lane
+            int laneIndex = tileScriptComponent.laneIndex;
+            SpawnTile(laneIndex, TILES_PER_LANE + 1); // Position it further along the lane
+        }
+
+        Destroy(tile);
     }
 }

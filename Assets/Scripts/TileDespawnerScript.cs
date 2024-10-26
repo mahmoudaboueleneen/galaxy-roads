@@ -12,8 +12,7 @@ public class TileDespawnerScript : MonoBehaviour
             other.CompareTag("BoostTile") ||
             other.CompareTag("EmptyTile"))
         {
-            TileManager.Instance.RemoveTileFromList(other.gameObject);
-            Destroy(other.gameObject);
+            TileManager.Instance.DestroyAndReplaceTile(other.gameObject);
         }
     }
 }

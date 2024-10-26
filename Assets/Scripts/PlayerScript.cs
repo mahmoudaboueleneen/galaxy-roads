@@ -21,6 +21,9 @@ public class PlayerScript : MonoBehaviour
     private int fuel;
     private float timeSinceLastFuelDecrement;
 
+    private int score;
+    private float timeSinceLastScoreIncrement;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -44,6 +47,7 @@ public class PlayerScript : MonoBehaviour
         HandleJump();
         MoveToLanePosition();
         DecrementFuelEverySecond();
+        IncreaseScoreEverySecond();
         CheckForFuelRefillCheat();
     }
 
@@ -111,10 +115,22 @@ public class PlayerScript : MonoBehaviour
         {
             fuel -= 1;
             timeSinceLastFuelDecrement = 0f;
-            if (fuel < 0)
-                fuel = 0;
 
-            Debug.Log("Current Fuel: " + fuel);
+            if (fuel < 0)
+            {
+                fuel = 0;
+            }
+        }
+    }
+
+    private void IncreaseScoreEverySecond()
+    {
+        timeSinceLastScoreIncrement += Time.deltaTime;
+
+        if (timeSinceLastScoreIncrement >= 1f)
+        {
+            score += 1;
+            timeSinceLastScoreIncrement = 0f;
         }
     }
 
@@ -122,8 +138,13 @@ public class PlayerScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F))
         {
-            fuel = MAX_FUEL;
+            RefillFuel();
         }
+    }
+
+    private void RefillFuel()
+    {
+        fuel = MAX_FUEL;
     }
 
     private void OnCollisionEnter(Collision collision)
