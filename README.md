@@ -1,5 +1,7 @@
 # Galaxy Roads
 
+SkyRoads-like endless runner game made with Unity
+
 ## Credits
 
 ### Sound Effects
