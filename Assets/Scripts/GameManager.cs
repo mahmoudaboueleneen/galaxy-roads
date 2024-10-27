@@ -2,16 +2,20 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
     [SerializeField] private GameObject pausePanel;
+    [SerializeField] private GameObject gameOverPanel;
     private bool isPaused = false;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        if (Instance != null && Instance != this)
+            Destroy(gameObject);
+        else
+            Instance = this;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -54,8 +58,9 @@ public class GameManager : MonoBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
-    public void QuitGame()
+    public void ShowGameOver()
     {
-        Application.Quit();
+        Time.timeScale = 0f;
+        gameOverPanel.SetActive(true);
     }
 }

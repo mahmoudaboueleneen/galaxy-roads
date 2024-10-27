@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class TileManager : MonoBehaviour
@@ -16,17 +17,24 @@ public class TileManager : MonoBehaviour
 
     private List<GameObject> tiles;
 
-    private const int TILES_ON_SCREEN = 90;
+    [Header("Obstacle Prefabs")]
+    [SerializeField] private GameObject obstaclePrefab;
+
     private const int TILES_PER_LANE = 5;
     private const float SLOW_SPEED = 2.5f;
     private const float NORMAL_SPEED = 5f;
     private const float HIGH_SPEED = 10f;
 
     private float moveSpeed;
+    private float[] furthestZInLane;
 
     private Vector3 leftLanePosition;
     private Vector3 middleLanePosition;
     private Vector3 rightLanePosition;
+
+    [Header("HUD Elements")]
+    [SerializeField] private TextMeshProUGUI speedText;
+
 
     void Awake()
     {
@@ -46,13 +54,17 @@ public class TileManager : MonoBehaviour
         tiles = new List<GameObject>();
 
         moveSpeed = NORMAL_SPEED;
+        speedText.text = "Normal Speed";
+
+        furthestZInLane = new float[3] { -Shared.LANE_LENGTH, -Shared.LANE_LENGTH, -Shared.LANE_LENGTH };
 
         middleLanePosition = Vector3.zero;
         leftLanePosition = Vector3.left * Shared.LANE_WIDTH;
         rightLanePosition = Vector3.right * Shared.LANE_WIDTH;
 
-        for (int i = 0; i < TILES_ON_SCREEN; i++)
-            SpawnTile(i % TILES_PER_LANE, (i / TILES_PER_LANE) - 1);
+        for (int laneIdx = 0; laneIdx < 3; laneIdx++)
+            for (int j = 0; j < TILES_PER_LANE; j++)
+                SpawnTile(laneIdx);
     }
 
     void Update()
@@ -60,7 +72,7 @@ public class TileManager : MonoBehaviour
         MoveTilesTowardsPlayer();
     }
 
-    public void SpawnTile(int laneIndex, int tileIndex)
+    public void SpawnTile(int laneIndex)
     {
         Vector3 spawnPosition = Vector3.zero;
         const float tileLength = Shared.LANE_LENGTH;
@@ -68,13 +80,16 @@ public class TileManager : MonoBehaviour
         switch (laneIndex)
         {
             case 0:
-                spawnPosition = leftLanePosition + Vector3.forward * (tileIndex * tileLength);
+                spawnPosition = leftLanePosition + Vector3.forward * (furthestZInLane[0]);
+                furthestZInLane[0] += tileLength;
                 break;
             case 1:
-                spawnPosition = middleLanePosition + Vector3.forward * (tileIndex * tileLength);
+                spawnPosition = middleLanePosition + Vector3.forward * (furthestZInLane[1]);
+                furthestZInLane[1] += tileLength;
                 break;
             case 2:
-                spawnPosition = rightLanePosition + Vector3.forward * (tileIndex * tileLength);
+                spawnPosition = rightLanePosition + Vector3.forward * (furthestZInLane[2]);
+                furthestZInLane[2] += tileLength;
                 break;
         }
 
@@ -106,7 +121,7 @@ public class TileManager : MonoBehaviour
         {
             // Spawn a new tile in the same lane
             int laneIndex = tileScriptComponent.laneIndex;
-            SpawnTile(laneIndex, TILES_PER_LANE + 1); // Position it further along the lane
+            SpawnTile(laneIndex);
         }
 
         Destroy(tile);

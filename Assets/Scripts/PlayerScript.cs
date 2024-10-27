@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using static Shared;
 
@@ -6,6 +7,7 @@ public class PlayerScript : MonoBehaviour
     private Rigidbody rb;
     private Transform tr;
 
+    [Header("Player Movement")]
     [SerializeField] private float laneSwapSpeed = 5f;
     [SerializeField] private float jumpForce = 5f;
 
@@ -24,6 +26,11 @@ public class PlayerScript : MonoBehaviour
     private int score;
     private float timeSinceLastScoreIncrement;
 
+    [Header("HUD Elements")]
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI finalScoreText;
+    [SerializeField] private TextMeshProUGUI fuelText;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -38,7 +45,11 @@ public class PlayerScript : MonoBehaviour
 
         currentLane = Lane.Middle;
 
+        scoreText.text = "Score: " + score;
+        finalScoreText.text = "Final Score: " + score;
+
         fuel = MAX_FUEL;
+        fuelText.text = "Fuel: " + fuel;
     }
 
     void Update()
@@ -120,6 +131,8 @@ public class PlayerScript : MonoBehaviour
             {
                 fuel = 0;
             }
+
+            fuelText.text = "Fuel: " + fuel;
         }
     }
 
@@ -131,6 +144,8 @@ public class PlayerScript : MonoBehaviour
         {
             score += 1;
             timeSinceLastScoreIncrement = 0f;
+            scoreText.text = "Score: " + score;
+            finalScoreText.text = "Final Score: " + score;
         }
     }
 
@@ -160,6 +175,7 @@ public class PlayerScript : MonoBehaviour
             isGrounded = true;
         }
     }
+
     private void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.CompareTag("NormalTile")
@@ -171,6 +187,14 @@ public class PlayerScript : MonoBehaviour
         )
         {
             isGrounded = false;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("EmptyTile"))
+        {
+            
         }
     }
 }
