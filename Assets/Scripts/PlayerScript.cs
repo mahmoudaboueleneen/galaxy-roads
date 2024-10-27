@@ -8,8 +8,8 @@ public class PlayerScript : MonoBehaviour
     private Transform tr;
 
     [Header("Player Movement")]
-    [SerializeField] private float laneSwapSpeed = 5f;
-    [SerializeField] private float jumpForce = 25f;
+    [SerializeField] private float laneSwapSpeed = 2.5f;
+    [SerializeField] private float jumpForce = 15f;
     public Vector3 jump;
     private bool isGrounded;
 
@@ -42,7 +42,7 @@ public class PlayerScript : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         tr = GetComponent<Transform>();
 
-        jump = new Vector3(0.0f, 2.0f, 0.0f);
+        jump = new Vector3(0.0f, 3.0f, 0.0f);
         isGrounded = true;
 
         disableControls = false;
@@ -73,11 +73,17 @@ public class PlayerScript : MonoBehaviour
 
         HandleJump();
         HandleLaneChange();
-        MoveToLanePosition();
+        //MoveToLanePosition();
         DecrementFuelEverySecond();
         IncreaseScoreEverySecond();
         CheckForFuelRefillCheat();
         CheckForFalling();
+    }
+
+    void FixedUpdate()
+    {
+        MoveToLanePosition();
+        //HandleJump();
     }
 
     private void HandleJump()
@@ -100,11 +106,13 @@ public class PlayerScript : MonoBehaviour
     {
         if (!disableControls && !isMovingToLane)
         {
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            float horizontalInput = Input.GetAxis("Horizontal");
+
+            if (horizontalInput < 0)
             {
                 MoveLeft();
             }
-            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            else if (horizontalInput > 0)
             {
                 MoveRight();
             }
@@ -152,14 +160,19 @@ public class PlayerScript : MonoBehaviour
         Vector3 targetPosition = currentLane == Lane.Left ? leftLanePosition :
                                  currentLane == Lane.Right ? rightLanePosition :
                                  middleLanePosition;
+        // TODO: Refactor this... should rely directly on physics instead of moving the player manually
+        float distanceToTarget = Vector3.Distance(tr.position, targetPosition);
+        float speedMultiplier = Mathf.Clamp01(distanceToTarget / LANE_WIDTH);
+        float speed = laneSwapSpeed * (1 + speedMultiplier);
+        tr.position = Vector3.MoveTowards(tr.position, targetPosition, speed * Time.deltaTime);
 
-        tr.position = Vector3.MoveTowards(tr.position, targetPosition, laneSwapSpeed * Time.deltaTime);
-
-        if (Vector3.Distance(tr.position, targetPosition) < 0.1f) // TODO: Adjust tolerance
+        if (Vector3.Distance(tr.position, targetPosition) < 0.1f)
         {
             isMovingToLane = false;
+            tr.position = targetPosition;
         }
     }
+
 
     private void DecrementFuelEverySecond()
     {
@@ -250,12 +263,14 @@ public class PlayerScript : MonoBehaviour
         if (collision.gameObject.CompareTag("BoostTile"))
         {
             TileManager.Instance.BoostTileSpeed();
+            laneSwapSpeed = 5;
             AudioSource.PlayClipAtPoint(AudioManager.Instance.boostSfxClip, collision.transform.position);
         }
 
         if (collision.gameObject.CompareTag("StickyTile"))
         {
             TileManager.Instance.ResetTileSpeed();
+            laneSwapSpeed = 2.5f;
             AudioSource.PlayClipAtPoint(AudioManager.Instance.stickySfxClip, collision.transform.position);
         }
 
@@ -268,11 +283,14 @@ public class PlayerScript : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        // TODO: Fix this stupid bug...... For some reason this func is triggered even when the player is mid-air, some tile is colliding with it midair
+        // TODO: Fix this stupid bug......
+        // For some reason this func is triggered even when the player is mid-air, some tile is colliding with it midair
         // This is a temporary fix
+
         // Check if the player is not mid air
         if (rb.velocity.y == 0)
         {
+            Debug.Log("Grounded");
             isGrounded = true;
         }
     }

@@ -113,7 +113,7 @@ public class TileManager : MonoBehaviour
 
         GameObject newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
 
-        if (enableObstacles && tilePrefab == normalTilePrefab && Random.value < 0.1f)
+        if (enableObstacles && tilePrefab == normalTilePrefab && Random.value < 0.05f)
         {
             GameObject obstacle = Instantiate(obstaclePrefab, newTile.transform.position + Vector3.up, Quaternion.identity);
             obstacle.transform.parent = newTile.transform;
@@ -142,23 +142,23 @@ public class TileManager : MonoBehaviour
     {
         float rand = Random.value;
 
-        if (rand < 0.05f)
+        if (rand < 0.01f)
         {
             return boostTilePrefab;
         }
-        else if (rand < 0.1f)
+        else if (rand < 0.02f)
         {
             return stickyTilePrefab;
         }
-        else if (rand < 0.15f)
+        else if (rand < 0.03f)
         {
             return suppliesTilePrefab;
         }
-        else if (rand < 0.3f)
+        else if (rand < 0.1f)
         {
             return burningTilePrefab;
         }
-        else if (rand < 0.5f)
+        else if (rand < 0.25f)
         {
             return emptyTilePrefab;
         }
