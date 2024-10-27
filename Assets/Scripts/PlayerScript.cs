@@ -9,7 +9,7 @@ public class PlayerScript : MonoBehaviour
 
     [Header("Player Movement")]
     [SerializeField] private float laneSwapSpeed = 5f;
-    [SerializeField] private float jumpForce = 15f;
+    [SerializeField] private float jumpForce = 25f;
     public Vector3 jump;
     private bool isGrounded;
 

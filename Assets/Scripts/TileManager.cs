@@ -13,7 +13,6 @@ public class TileManager : MonoBehaviour
     [SerializeField] private GameObject suppliesTilePrefab;
     [SerializeField] private GameObject boostTilePrefab;
     [SerializeField] private GameObject stickyTilePrefab;
-    private GameObject[] tilePrefabs;
 
     private List<GameObject> tiles;
 
@@ -47,14 +46,6 @@ public class TileManager : MonoBehaviour
         else
             Instance = this;
 
-        tilePrefabs = new GameObject[] { 
-            normalTilePrefab,
-            emptyTilePrefab,
-            burningTilePrefab, 
-            suppliesTilePrefab, 
-            boostTilePrefab, 
-            stickyTilePrefab,  
-        };
         tiles = new List<GameObject>();
 
         moveSpeed = NORMAL_SPEED;
@@ -149,18 +140,34 @@ public class TileManager : MonoBehaviour
 
     private GameObject GetRandomTilePrefab()
     {
-        if (Random.value < 0.4f)
+        float rand = Random.value;
+
+        if (rand < 0.05f)
         {
-            return normalTilePrefab;
+            return boostTilePrefab;
         }
-        else if (Random.value < 0.41f)
+        else if (rand < 0.1f)
+        {
+            return stickyTilePrefab;
+        }
+        else if (rand < 0.15f)
+        {
+            return suppliesTilePrefab;
+        }
+        else if (rand < 0.3f)
+        {
+            return burningTilePrefab;
+        }
+        else if (rand < 0.5f)
         {
             return emptyTilePrefab;
         }
-        else {
-            return tilePrefabs[Random.Range(1, tilePrefabs.Length)];
+        else
+        {
+            return normalTilePrefab;
         }
     }
+
 
     private void MoveTilesTowardsPlayer()
     {
