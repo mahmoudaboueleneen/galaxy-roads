@@ -451,10 +451,10 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Textures\r\n\rSky: Designed by Freepik on Freepik.com\n\nMusic\nGame Background
     Music: kevp888 on Freesound.org\nMenus Background Music: Sunsai on Freesound.org\n\nSound
-    Effects\nSupplies: Pixabay on Pixabay.com\nBoost: Pixabay on Pixabay.com\nSticky:
-    JustinCallaghan on Pixabay.com\nBurning: Alice_soundz on Pixabay.com\nError:
-    u_31vnwfmzt6 on Pixabay.com\nFalling: Pixabay on Pixabay.com\nObstacle Hit: LordSonny
-    on Pixabay.com\n"
+    Effects\nSupplies: Pixabay on Pixabay.com\r\nBoost: Pixabay on Pixabay.com\r\nSticky:
+    JustinCallaghan on Pixabay.com\r\nBurning: floraphonic on Pixabay.com\r\nError:
+    u_8iuwl7zrk0 on Pixabay.com\r\nFalling: Pixabay on Pixabay.com\r\nObstacle Hit:
+    LordSonny on Pixabay.com"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -917,12 +917,12 @@ MonoBehaviour:
   menuTrack: {fileID: 8300000, guid: 34e0870d483900b4ba3aa185cd38e467, type: 3}
   gameTrack: {fileID: 8300000, guid: 346e14db1aadb654a9379ad5ad198fe4, type: 3}
   boostSfxClip: {fileID: 8300000, guid: c3b1c11bddafed54d95419a6a6f33029, type: 3}
-  burningSfxClip: {fileID: 8300000, guid: b929525fc3900c0429904b7a1fba9a2f, type: 3}
+  burningSfxClip: {fileID: 8300000, guid: 3cc4696bbec209243b5a75ea1e7ac400, type: 3}
   errorSfxClip: {fileID: 8300000, guid: 47db8e88a6e60e946b2faeac4e6eda61, type: 3}
   fallingSfxClip: {fileID: 8300000, guid: 8ba23c00bed7f374eaf577c55df4202a, type: 3}
   obstacleHitSfxClip: {fileID: 8300000, guid: 9be7e5b553294e64a94679a77694316c, type: 3}
   stickySfxClip: {fileID: 8300000, guid: 074326b9ca3e6794387b48b902cbda37, type: 3}
-  suppliesSfxClip: {fileID: 8300000, guid: 7406a961b403d4247a2c78083074d197, type: 3}
+  suppliesSfxClip: {fileID: 8300000, guid: e871cc4fb7ad9524686ead6c5ec4c336, type: 3}
 --- !u!4 &700763492
 Transform:
   m_ObjectHideFlags: 0

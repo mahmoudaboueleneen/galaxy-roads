@@ -9,11 +9,12 @@ public class PlayerScript : MonoBehaviour
 
     [Header("Player Movement")]
     [SerializeField] private float laneSwapSpeed = 5f;
-    [SerializeField] private float jumpForce = 25f;
+    [SerializeField] private float jumpForce = 15f;
     public Vector3 jump;
     private bool isGrounded;
 
     private bool disableControls;
+    private bool isMovingToLane;
 
     private Vector3 leftLanePosition;
     private Vector3 middleLanePosition;
@@ -45,6 +46,7 @@ public class PlayerScript : MonoBehaviour
         isGrounded = true;
 
         disableControls = false;
+        isMovingToLane = false;
 
         // Initialize lane positions based on the player's starting position
         middleLanePosition = tr.position;
@@ -63,18 +65,13 @@ public class PlayerScript : MonoBehaviour
 
     void Update()
     {
+        // Weird things happen if EndGame() is called and we don't do this..
         if (Time.timeScale == 0)
         {
             return;
         }
 
-        if (!disableControls && Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            Debug.Log("isGrounded: " + isGrounded);
-            rb.AddForce(jump * jumpForce, ForceMode.Impulse);
-            isGrounded = false;
-        }
-
+        HandleJump();
         HandleLaneChange();
         MoveToLanePosition();
         DecrementFuelEverySecond();
@@ -83,29 +80,34 @@ public class PlayerScript : MonoBehaviour
         CheckForFalling();
     }
 
-    private void CheckForFalling()
+    private void HandleJump()
     {
-        if (tr.position.y < -1.2)
+        if (!disableControls && Input.GetKeyDown(KeyCode.Space))
         {
-            disableControls = true;
-            AudioSource.PlayClipAtPoint(AudioManager.Instance.fallingSfxClip, tr.position);
-        }
-        if (tr.position.y < -5)
-        {
-            GameManager.Instance.EndGame();
-            return;
+            if (isGrounded)
+            {
+                rb.AddForce(jump * jumpForce, ForceMode.Impulse);
+                isGrounded = false;
+            }
+            else
+            {
+                AudioSource.PlayClipAtPoint(AudioManager.Instance.errorSfxClip, tr.position);
+            }
         }
     }
 
     private void HandleLaneChange()
     {
-        if (!disableControls && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)))
+        if (!disableControls && !isMovingToLane)
         {
-            MoveLeft();
-        }
-        else if (!disableControls && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)))
-        {
-            MoveRight();
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                MoveLeft();
+            }
+            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                MoveRight();
+            }
         }
     }
 
@@ -114,14 +116,15 @@ public class PlayerScript : MonoBehaviour
         if (currentLane == Lane.Middle)
         {
             currentLane = Lane.Left;
+            isMovingToLane = true;
         }
         else if (currentLane == Lane.Right)
         {
             currentLane = Lane.Middle;
+            isMovingToLane = true;
         }
         else if (currentLane == Lane.Left)
         {
-            Debug.Log("Already in left lane");
             AudioSource.PlayClipAtPoint(AudioManager.Instance.errorSfxClip, tr.position);
         }
     }
@@ -131,27 +134,31 @@ public class PlayerScript : MonoBehaviour
         if (currentLane == Lane.Middle)
         {
             currentLane = Lane.Right;
+            isMovingToLane = true;
         }
         else if (currentLane == Lane.Left)
         {
             currentLane = Lane.Middle;
+            isMovingToLane = true;
         }
         else if (currentLane == Lane.Right)
         {
-            Debug.Log("Already in right lane");
             AudioSource.PlayClipAtPoint(AudioManager.Instance.errorSfxClip, tr.position);
         }
     }
 
     private void MoveToLanePosition()
     {
-        // Get the target position based on the current lane
         Vector3 targetPosition = currentLane == Lane.Left ? leftLanePosition :
                                  currentLane == Lane.Right ? rightLanePosition :
                                  middleLanePosition;
 
-        // Smoothly move the player to the target lane position
         tr.position = Vector3.MoveTowards(tr.position, targetPosition, laneSwapSpeed * Time.deltaTime);
+
+        if (Vector3.Distance(tr.position, targetPosition) < 0.1f) // TODO: Adjust tolerance
+        {
+            isMovingToLane = false;
+        }
     }
 
     private void DecrementFuelEverySecond()
@@ -199,6 +206,29 @@ public class PlayerScript : MonoBehaviour
         fuel = MAX_FUEL;
     }
 
+    private void CheckForFalling()
+    {
+        if (tr.position.y < -1.2)
+        {
+            disableControls = true;
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.fallingSfxClip, tr.position);
+        }
+        if (tr.position.y < -5)
+        {
+            GameManager.Instance.EndGame();
+            return;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("EmptyTile"))
+        {
+            //TileManager.Instance.StopTiles();
+            //rb.AddForce(Vector3.down * 10f, ForceMode.Impulse);
+        }
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("BurningTile"))
@@ -229,16 +259,6 @@ public class PlayerScript : MonoBehaviour
         {
             AudioSource.PlayClipAtPoint(AudioManager.Instance.obstacleHitSfxClip, collision.transform.position);
             GameManager.Instance.EndGame();
-        }
-
-        if (collision.gameObject.CompareTag("EmptyTile"))
-        {
-            // Stop Tile Movement
-            TileManager.Instance.StopTiles();
-            // Remove any forces acting on the player and make him fall instantly
-            rb.velocity = Vector3.zero;
-            rb.AddForce(Vector3.down * 10f, ForceMode.Impulse);
-            rb.velocity.Normalize();
         }
     }
 

@@ -27,7 +27,7 @@ public class TileManager : MonoBehaviour
 
     public const float LANE_LENGTH = 5f;
     public const int NUMBER_OF_LANES = 3;
-    private const int TILES_PER_LANE = 10;
+    private const int TILES_PER_LANE = 15;
 
     private Vector3 leftLanePosition;
     private Vector3 middleLanePosition;
@@ -153,7 +153,7 @@ public class TileManager : MonoBehaviour
         {
             return normalTilePrefab;
         }
-        else if (Random.value < 0.6f)
+        else if (Random.value < 0.41f)
         {
             return emptyTilePrefab;
         }
