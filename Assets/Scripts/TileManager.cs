@@ -20,21 +20,25 @@ public class TileManager : MonoBehaviour
     [Header("Obstacle Prefabs")]
     [SerializeField] private GameObject obstaclePrefab;
 
-    private const int TILES_PER_LANE = 5;
     private const float SLOW_SPEED = 2.5f;
     private const float NORMAL_SPEED = 5f;
     private const float HIGH_SPEED = 10f;
-
     private float moveSpeed;
-    private float[] furthestZInLane;
+
+    public const float LANE_LENGTH = 5f;
+    public const int NUMBER_OF_LANES = 3;
+    private const int TILES_PER_LANE = 10;
 
     private Vector3 leftLanePosition;
     private Vector3 middleLanePosition;
     private Vector3 rightLanePosition;
 
+    private GameObject lastLeftLaneTile;
+    private GameObject lastMiddleLaneTile;
+    private GameObject lastRightLaneTile;
+
     [Header("HUD Elements")]
     [SerializeField] private TextMeshProUGUI speedText;
-
 
     void Awake()
     {
@@ -56,15 +60,11 @@ public class TileManager : MonoBehaviour
         moveSpeed = NORMAL_SPEED;
         speedText.text = "Normal Speed";
 
-        furthestZInLane = new float[3] { -Shared.LANE_LENGTH, -Shared.LANE_LENGTH, -Shared.LANE_LENGTH };
-
-        middleLanePosition = Vector3.zero;
         leftLanePosition = Vector3.left * Shared.LANE_WIDTH;
+        middleLanePosition = Vector3.zero;
         rightLanePosition = Vector3.right * Shared.LANE_WIDTH;
 
-        for (int laneIdx = 0; laneIdx < 3; laneIdx++)
-            for (int j = 0; j < TILES_PER_LANE; j++)
-                SpawnTile(laneIdx);
+        SpawnInitialTiles();
     }
 
     void Update()
@@ -72,32 +72,71 @@ public class TileManager : MonoBehaviour
         MoveTilesTowardsPlayer();
     }
 
-    public void SpawnTile(int laneIndex)
+    private void SpawnInitialTiles()
+    {
+        for (int i = 0; i < TILES_PER_LANE; i++)
+        {
+            for (int j = 0; j < NUMBER_OF_LANES; j++)
+            {
+                SpawnTile(j, normalTilePrefab);
+            }
+        }
+    }
+
+    public void SpawnTile(int laneIndex, GameObject tilePrefab)
     {
         Vector3 spawnPosition = Vector3.zero;
-        const float tileLength = Shared.LANE_LENGTH;
 
         switch (laneIndex)
         {
             case 0:
-                spawnPosition = leftLanePosition + Vector3.forward * (furthestZInLane[0]);
-                furthestZInLane[0] += tileLength;
+                if (lastLeftLaneTile == null)
+                {
+                    spawnPosition = leftLanePosition + Vector3.back * LANE_LENGTH;
+                } else
+                {
+                    spawnPosition = leftLanePosition + Vector3.forward * (lastLeftLaneTile.transform.position.z + LANE_LENGTH); // Spawn after last tile
+                }
                 break;
             case 1:
-                spawnPosition = middleLanePosition + Vector3.forward * (furthestZInLane[1]);
-                furthestZInLane[1] += tileLength;
+                if (lastMiddleLaneTile == null)
+                {
+                    spawnPosition = middleLanePosition + Vector3.back * LANE_LENGTH;
+                }
+                else
+                {
+                    spawnPosition = middleLanePosition + Vector3.forward * (lastMiddleLaneTile.transform.position.z + LANE_LENGTH); // Spawn after last tile
+                }
                 break;
             case 2:
-                spawnPosition = rightLanePosition + Vector3.forward * (furthestZInLane[2]);
-                furthestZInLane[2] += tileLength;
+                if (lastRightLaneTile == null)
+                {
+                    spawnPosition = rightLanePosition + Vector3.back * LANE_LENGTH;
+                }
+                else
+                {
+                    spawnPosition = rightLanePosition + Vector3.forward * (lastRightLaneTile.transform.position.z + LANE_LENGTH); // Spawn after last tile
+                }
                 break;
         }
 
-        GameObject newTilePrefab = GetRandomTilePrefab();
-        GameObject newTile = Instantiate(newTilePrefab, spawnPosition, Quaternion.identity);
+        GameObject newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
 
         TileScript tileScriptComponent = newTile.GetComponent<TileScript>();
         tileScriptComponent.laneIndex = laneIndex;
+
+        switch (laneIndex)
+        {
+            case 0:
+                lastLeftLaneTile = newTile;
+                break;
+            case 1:
+                lastMiddleLaneTile = newTile;
+                break;
+            case 2:
+                lastRightLaneTile = newTile;
+                break;
+        }
 
         tiles.Add(newTile);
     }
@@ -110,7 +149,9 @@ public class TileManager : MonoBehaviour
     private void MoveTilesTowardsPlayer()
     {
         foreach (GameObject tile in tiles)
+        {
             tile.transform.position += moveSpeed * Time.deltaTime * Vector3.back;
+        }
     }
 
     public void DestroyAndReplaceTile(GameObject tile)
@@ -120,8 +161,9 @@ public class TileManager : MonoBehaviour
         if (tile.TryGetComponent<TileScript>(out var tileScriptComponent))
         {
             // Spawn a new tile in the same lane
+            GameObject newTilePrefab = GetRandomTilePrefab();
             int laneIndex = tileScriptComponent.laneIndex;
-            SpawnTile(laneIndex);
+            SpawnTile(laneIndex, newTilePrefab);
         }
 
         Destroy(tile);

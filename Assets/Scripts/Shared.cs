@@ -7,9 +7,7 @@
         Right
     }
 
-    public const float LANE_LENGTH = 5f;
     public const float LANE_WIDTH = 5f; 
-    public const int NUMBER_OF_LANES = 3;
 
     public const string NORMAL_TILE_TAG = "NormalTile";
     public const string BURNING_TILE_TAG = "BurningTile";

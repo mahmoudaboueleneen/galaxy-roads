@@ -4,6 +4,10 @@ SkyRoads-like endless runner game made with Unity
 
 ## Credits
 
+### Textures
+
+- Sky: Designed by Freepik on Freepik.com
+
 ### Music
 
 - Game Background Music: kevp888 on Freesound.org

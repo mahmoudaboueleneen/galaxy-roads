@@ -89,6 +89,10 @@ public class PlayerScript : MonoBehaviour
         {
             currentLane = Lane.Middle;
         }
+        else if (currentLane == Lane.Left)
+        {
+            AudioManager.Instance.PlayErrorSfx();
+        }
     }
 
     private void MoveRight()
@@ -100,6 +104,10 @@ public class PlayerScript : MonoBehaviour
         else if (currentLane == Lane.Left)
         {
             currentLane = Lane.Middle;
+        }
+        else if (currentLane == Lane.Right)
+        {
+            AudioManager.Instance.PlayErrorSfx();
         }
     }
 
@@ -205,6 +213,11 @@ public class PlayerScript : MonoBehaviour
         }
 
         if (collision.gameObject.CompareTag("EmptyTile"))
+        {
+            GameManager.Instance.EndGame();
+        }
+
+        if (collision.gameObject.CompareTag("Obstacle"))
         {
             GameManager.Instance.EndGame();
         }
