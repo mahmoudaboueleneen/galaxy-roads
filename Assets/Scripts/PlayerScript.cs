@@ -124,7 +124,7 @@ public class PlayerScript : MonoBehaviour
 
     private void HandleJump()
     {
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;

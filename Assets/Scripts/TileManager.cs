@@ -8,11 +8,11 @@ public class TileManager : MonoBehaviour
 
     [Header("Tile Prefabs")]
     [SerializeField] private GameObject normalTilePrefab;
+    [SerializeField] private GameObject emptyTilePrefab;
     [SerializeField] private GameObject burningTilePrefab;
     [SerializeField] private GameObject suppliesTilePrefab;
     [SerializeField] private GameObject boostTilePrefab;
     [SerializeField] private GameObject stickyTilePrefab;
-    [SerializeField] private GameObject emptyTilePrefab;
     private GameObject[] tilePrefabs;
 
     private List<GameObject> tiles;
@@ -48,12 +48,12 @@ public class TileManager : MonoBehaviour
             Instance = this;
 
         tilePrefabs = new GameObject[] { 
-            normalTilePrefab, 
+            normalTilePrefab,
+            emptyTilePrefab,
             burningTilePrefab, 
             suppliesTilePrefab, 
             boostTilePrefab, 
-            stickyTilePrefab, 
-            emptyTilePrefab 
+            stickyTilePrefab,  
         };
         tiles = new List<GameObject>();
 
@@ -78,12 +78,12 @@ public class TileManager : MonoBehaviour
         {
             for (int j = 0; j < NUMBER_OF_LANES; j++)
             {
-                SpawnTile(j, normalTilePrefab);
+                SpawnTile(j, normalTilePrefab, false);
             }
         }
     }
 
-    public void SpawnTile(int laneIndex, GameObject tilePrefab)
+    public void SpawnTile(int laneIndex, GameObject tilePrefab, bool enableObstacles = true)
     {
         Vector3 spawnPosition = Vector3.zero;
 
@@ -95,7 +95,7 @@ public class TileManager : MonoBehaviour
                     spawnPosition = leftLanePosition + Vector3.back * LANE_LENGTH;
                 } else
                 {
-                    spawnPosition = leftLanePosition + Vector3.forward * (lastLeftLaneTile.transform.position.z + LANE_LENGTH); // Spawn after last tile
+                    spawnPosition = leftLanePosition + Vector3.forward * (lastLeftLaneTile.transform.position.z + LANE_LENGTH);
                 }
                 break;
             case 1:
@@ -105,7 +105,7 @@ public class TileManager : MonoBehaviour
                 }
                 else
                 {
-                    spawnPosition = middleLanePosition + Vector3.forward * (lastMiddleLaneTile.transform.position.z + LANE_LENGTH); // Spawn after last tile
+                    spawnPosition = middleLanePosition + Vector3.forward * (lastMiddleLaneTile.transform.position.z + LANE_LENGTH);
                 }
                 break;
             case 2:
@@ -115,12 +115,18 @@ public class TileManager : MonoBehaviour
                 }
                 else
                 {
-                    spawnPosition = rightLanePosition + Vector3.forward * (lastRightLaneTile.transform.position.z + LANE_LENGTH); // Spawn after last tile
+                    spawnPosition = rightLanePosition + Vector3.forward * (lastRightLaneTile.transform.position.z + LANE_LENGTH);
                 }
                 break;
         }
 
         GameObject newTile = Instantiate(tilePrefab, spawnPosition, Quaternion.identity);
+
+        if (enableObstacles && tilePrefab == normalTilePrefab && Random.value < 0.1f)
+        {
+            GameObject obstacle = Instantiate(obstaclePrefab, newTile.transform.position + Vector3.up, Quaternion.identity);
+            obstacle.transform.parent = newTile.transform;
+        }
 
         TileScript tileScriptComponent = newTile.GetComponent<TileScript>();
         tileScriptComponent.laneIndex = laneIndex;
@@ -143,7 +149,17 @@ public class TileManager : MonoBehaviour
 
     private GameObject GetRandomTilePrefab()
     {
-        return tilePrefabs[Random.Range(0, tilePrefabs.Length)];
+        if (Random.value < 0.4f)
+        {
+            return normalTilePrefab;
+        }
+        else if (Random.value < 0.6f)
+        {
+            return emptyTilePrefab;
+        }
+        else {
+            return tilePrefabs[Random.Range(1, tilePrefabs.Length)];
+        }
     }
 
     private void MoveTilesTowardsPlayer()

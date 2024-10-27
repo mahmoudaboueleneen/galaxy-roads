@@ -1396,7 +1396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9924528, g: 0.26777494, b: 0.26777494, a: 0.392}
+  m_Color: {r: 1, g: 0.096226394, b: 0.096226394, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2202,11 +2202,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   normalTilePrefab: {fileID: 9079540416245247944, guid: 618eb8de2321e834b9a6311dafabe0e8, type: 3}
+  emptyTilePrefab: {fileID: 8332745923122520335, guid: ea6238c2b0732bf43a3ef42ae48ef03f, type: 3}
   burningTilePrefab: {fileID: 1701963902893530869, guid: 2fce06c737a3f254eb184e0968a3154c, type: 3}
   suppliesTilePrefab: {fileID: 3716678463605790903, guid: e671213ecbe860744b1189535dff9854, type: 3}
   boostTilePrefab: {fileID: 7690447814708603573, guid: f4e4b1c2155f41e4c960faf99c57a044, type: 3}
   stickyTilePrefab: {fileID: 7564131504954044900, guid: 8a3a36c37d27a574c96bf4bf5e4f0e41, type: 3}
-  emptyTilePrefab: {fileID: 8332745923122520335, guid: ea6238c2b0732bf43a3ef42ae48ef03f, type: 3}
   obstaclePrefab: {fileID: 7716326440198327126, guid: 70b1d8cb63205ac4b88c211c8d83abe8, type: 3}
   speedText: {fileID: 394612345}
 --- !u!1 &1857812034
