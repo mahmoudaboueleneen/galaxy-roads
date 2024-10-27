@@ -9,9 +9,11 @@ public class PlayerScript : MonoBehaviour
 
     [Header("Player Movement")]
     [SerializeField] private float laneSwapSpeed = 5f;
-    [SerializeField] private float jumpForce = 5f;
-
+    [SerializeField] private float jumpForce = 25f;
+    public Vector3 jump;
     private bool isGrounded;
+
+    private bool disableControls;
 
     private Vector3 leftLanePosition;
     private Vector3 middleLanePosition;
@@ -26,7 +28,6 @@ public class PlayerScript : MonoBehaviour
     private int fuel;
     private float timeSinceLastFuelDecrement;
 
-
     private int score;
     private float timeSinceLastScoreIncrement;
 
@@ -40,7 +41,10 @@ public class PlayerScript : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         tr = GetComponent<Transform>();
 
+        jump = new Vector3(0.0f, 2.0f, 0.0f);
         isGrounded = true;
+
+        disableControls = false;
 
         // Initialize lane positions based on the player's starting position
         middleLanePosition = tr.position;
@@ -59,21 +63,47 @@ public class PlayerScript : MonoBehaviour
 
     void Update()
     {
+        if (Time.timeScale == 0)
+        {
+            return;
+        }
+
+        if (!disableControls && Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            Debug.Log("isGrounded: " + isGrounded);
+            rb.AddForce(jump * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+        }
+
         HandleLaneChange();
-        HandleJump();
         MoveToLanePosition();
         DecrementFuelEverySecond();
         IncreaseScoreEverySecond();
         CheckForFuelRefillCheat();
+        CheckForFalling();
+    }
+
+    private void CheckForFalling()
+    {
+        if (tr.position.y < -1.2)
+        {
+            disableControls = true;
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.fallingSfxClip, tr.position);
+        }
+        if (tr.position.y < -5)
+        {
+            GameManager.Instance.EndGame();
+            return;
+        }
     }
 
     private void HandleLaneChange()
     {
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        if (!disableControls && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)))
         {
             MoveLeft();
         }
-        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        else if (!disableControls && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)))
         {
             MoveRight();
         }
@@ -91,7 +121,8 @@ public class PlayerScript : MonoBehaviour
         }
         else if (currentLane == Lane.Left)
         {
-            AudioManager.Instance.PlayErrorSfx();
+            Debug.Log("Already in left lane");
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.errorSfxClip, tr.position);
         }
     }
 
@@ -107,7 +138,8 @@ public class PlayerScript : MonoBehaviour
         }
         else if (currentLane == Lane.Right)
         {
-            AudioManager.Instance.PlayErrorSfx();
+            Debug.Log("Already in right lane");
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.errorSfxClip, tr.position);
         }
     }
 
@@ -122,15 +154,6 @@ public class PlayerScript : MonoBehaviour
         tr.position = Vector3.MoveTowards(tr.position, targetPosition, laneSwapSpeed * Time.deltaTime);
     }
 
-    private void HandleJump()
-    {
-        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
-        {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            isGrounded = false;
-        }
-    }
-
     private void DecrementFuelEverySecond()
     {
         timeSinceLastFuelDecrement += Time.deltaTime;
@@ -140,9 +163,10 @@ public class PlayerScript : MonoBehaviour
             fuel -= fuelDecrementAmount;
             timeSinceLastFuelDecrement = 0f;
 
-            if (fuel < 0)
+            if (fuel <= 0)
             {
                 fuel = 0;
+                GameManager.Instance.EndGame();
             }
 
             fuelText.text = "Fuel: " + fuel;
@@ -177,76 +201,63 @@ public class PlayerScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("NormalTile")
-            || collision.gameObject.CompareTag("BurningTile")
-            || collision.gameObject.CompareTag("StickyTile")
-            || collision.gameObject.CompareTag("SuppliesTile")
-            || collision.gameObject.CompareTag("BoostTile")
-            || collision.gameObject.CompareTag("EmptyTile")
-            )
-        {
-            isGrounded = true;
-        }
-
         if (collision.gameObject.CompareTag("BurningTile"))
         {
             fuelDecrementAmount = BURNING_FUEL_DECREMENT_AMOUNT;
-            AudioManager.Instance.PlayBurningSfx();
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.burningSfxClip, collision.transform.position);
         }
 
         if (collision.gameObject.CompareTag("SuppliesTile"))
         {
             RefillFuel();
-            AudioManager.Instance.PlaySuppliesSfx();
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.suppliesSfxClip, collision.transform.position);
         }
 
         if (collision.gameObject.CompareTag("BoostTile"))
         {
             TileManager.Instance.BoostTileSpeed();
-            AudioManager.Instance.PlayBoostSfx();
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.boostSfxClip, collision.transform.position);
         }
 
         if (collision.gameObject.CompareTag("StickyTile"))
         {
             TileManager.Instance.ResetTileSpeed();
-            AudioManager.Instance.PlayStickySfx();
-        }
-
-        if (collision.gameObject.CompareTag("EmptyTile"))
-        {
-            GameManager.Instance.EndGame();
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.stickySfxClip, collision.transform.position);
         }
 
         if (collision.gameObject.CompareTag("Obstacle"))
         {
+            AudioSource.PlayClipAtPoint(AudioManager.Instance.obstacleHitSfxClip, collision.transform.position);
             GameManager.Instance.EndGame();
+        }
+
+        if (collision.gameObject.CompareTag("EmptyTile"))
+        {
+            // Stop Tile Movement
+            TileManager.Instance.StopTiles();
+            // Remove any forces acting on the player and make him fall instantly
+            rb.velocity = Vector3.zero;
+            rb.AddForce(Vector3.down * 10f, ForceMode.Impulse);
+            rb.velocity.Normalize();
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        // TODO: Fix this stupid bug...... For some reason this func is triggered even when the player is mid-air, some tile is colliding with it midair
+        // This is a temporary fix
+        // Check if the player is not mid air
+        if (rb.velocity.y == 0)
+        {
+            isGrounded = true;
         }
     }
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("NormalTile")
-            || collision.gameObject.CompareTag("BurningTile")
-            || collision.gameObject.CompareTag("StickyTile")
-            || collision.gameObject.CompareTag("SuppliesTile")
-            || collision.gameObject.CompareTag("BoostTile")
-            || collision.gameObject.CompareTag("EmptyTile")
-        )
-        {
-            isGrounded = false;
-        }
-
         if (collision.gameObject.CompareTag("BurningTile"))
         {
             fuelDecrementAmount = DEFAULT_FUEL_DECREMENT_AMOUNT;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("EmptyTile"))
-        {
-            
         }
     }
 }

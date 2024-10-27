@@ -148,6 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   laneSwapSpeed: 5
   jumpForce: 5
+  jump: {x: 0, y: 0, z: 0}
   scoreText: {fileID: 0}
-  fuelText: {fileID: 0}
   finalScoreText: {fileID: 0}
+  fuelText: {fileID: 0}

@@ -13,13 +13,13 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip gameTrack;
 
     [Header("SFX Audio Clips")]
-    [SerializeField] private AudioClip boostSfxClip;
-    [SerializeField] private AudioClip burningSfxClip;
-    [SerializeField] private AudioClip errorSfxClip;
-    [SerializeField] private AudioClip fallingSfxClip;
-    [SerializeField] private AudioClip obstacleHitSfxClip;
-    [SerializeField] private AudioClip stickySfxClip;
-    [SerializeField] private AudioClip suppliesSfxClip;
+    [SerializeField] public AudioClip boostSfxClip;
+    [SerializeField] public AudioClip burningSfxClip;
+    [SerializeField] public AudioClip errorSfxClip;
+    [SerializeField] public AudioClip fallingSfxClip;
+    [SerializeField] public AudioClip obstacleHitSfxClip;
+    [SerializeField] public AudioClip stickySfxClip;
+    [SerializeField] public AudioClip suppliesSfxClip;
 
     private const string MUTE_KEY = "MuteSetting";
 

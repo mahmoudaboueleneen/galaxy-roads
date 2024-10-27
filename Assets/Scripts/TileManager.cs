@@ -20,9 +20,9 @@ public class TileManager : MonoBehaviour
     [Header("Obstacle Prefabs")]
     [SerializeField] private GameObject obstaclePrefab;
 
-    private const float SLOW_SPEED = 2.5f;
-    private const float NORMAL_SPEED = 5f;
-    private const float HIGH_SPEED = 10f;
+    private const float SLOW_SPEED = 5f;
+    private const float NORMAL_SPEED = 10f;
+    private const float HIGH_SPEED = 20f;
     private float moveSpeed;
 
     public const float LANE_LENGTH = 5f;
@@ -195,5 +195,10 @@ public class TileManager : MonoBehaviour
     {
         moveSpeed = NORMAL_SPEED;
         speedText.text = "Normal Speed";
+    }
+
+    public void StopTiles()
+    {
+        moveSpeed = 0f;
     }
 }
