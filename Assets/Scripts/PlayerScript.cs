@@ -21,6 +21,7 @@ public class PlayerScript : MonoBehaviour
 
     private const int MAX_FUEL = 50;
     private const int DEFAULT_FUEL_DECREMENT_AMOUNT = 1;
+    private const int BURNING_FUEL_DECREMENT_AMOUNT = 10;
     private int fuelDecrementAmount;
     private int fuel;
     private float timeSinceLastFuelDecrement;
@@ -181,7 +182,7 @@ public class PlayerScript : MonoBehaviour
 
         if (collision.gameObject.CompareTag("BurningTile"))
         {
-            fuelDecrementAmount = 10;
+            fuelDecrementAmount = BURNING_FUEL_DECREMENT_AMOUNT;
             AudioManager.Instance.PlayBurningSfx();
         }
 
