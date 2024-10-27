@@ -6,16 +6,9 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject creditsPanel;
     [SerializeField] private GameObject howToPlayPanel;
 
-    // Start is called before the first frame update
     void Start()
     {
         AudioManager.Instance.PlayMenuTrack();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void PlayGame()

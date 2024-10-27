@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject gameOverPanel;
+
     private bool isPaused = false;
 
     void Awake()
@@ -14,6 +15,11 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         else
             Instance = this;
+    }
+
+    void Start()
+    {
+        AudioManager.Instance.PlayGameTrack();
     }
 
     void Update()
@@ -32,11 +38,13 @@ public class GameManager : MonoBehaviour
         {
             Time.timeScale = 0f;
             pausePanel.SetActive(true);
+            AudioManager.Instance.PlayMenuTrack();
         }
         else
         {
             Time.timeScale = 1f;
             pausePanel.SetActive(false);
+            AudioManager.Instance.PlayGameTrack();
         }
     }
 
@@ -45,6 +53,7 @@ public class GameManager : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         pausePanel.SetActive(false);
+        AudioManager.Instance.PlayGameTrack();
     }
 
     public void RestartGame()
@@ -62,5 +71,6 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0f;
         gameOverPanel.SetActive(true);
+        AudioManager.Instance.PlayMenuTrack();
     }
 }

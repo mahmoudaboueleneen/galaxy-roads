@@ -4,6 +4,11 @@ SkyRoads-like endless runner game made with Unity
 
 ## Credits
 
+### Music
+
+- Game Background Music: kevp888 on Freesound.org
+- Menus Background Music: Sunsai on Freesound.org
+
 ### Sound Effects
 
 - Supplies: Pixabay on Pixabay.com
