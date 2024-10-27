@@ -9,7 +9,7 @@ public class MainMenuManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        AudioManager.Instance.PlayMenuTrack();
     }
 
     // Update is called once per frame

@@ -10,6 +10,7 @@ TagManager:
   - BurningTile
   - EmptyTile
   - SuppliesTile
+  - Obstacle
   layers:
   - Default
   - TransparentFX
