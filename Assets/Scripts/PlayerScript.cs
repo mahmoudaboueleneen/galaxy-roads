@@ -211,6 +211,7 @@ public class PlayerScript : MonoBehaviour
         if (tr.position.y < -1.2)
         {
             disableControls = true;
+            TileManager.Instance.StopTiles();
             AudioSource.PlayClipAtPoint(AudioManager.Instance.fallingSfxClip, tr.position);
         }
         if (tr.position.y < -5)
@@ -224,8 +225,11 @@ public class PlayerScript : MonoBehaviour
     {
         if (other.CompareTag("EmptyTile"))
         {
-            //TileManager.Instance.StopTiles();
-            //rb.AddForce(Vector3.down * 10f, ForceMode.Impulse);
+            // Sleep and then wake up to force Unity to recalculate the physics immediately
+            // Otherwise, the player kind of hovers in the air for a bit before falling
+            rb.Sleep();
+            rb.AddForce(Vector3.down * 10f, ForceMode.Impulse);
+            rb.WakeUp();
         }
     }
 
