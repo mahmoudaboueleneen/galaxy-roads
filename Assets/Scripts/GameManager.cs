@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
-    public void ShowGameOver()
+    public void EndGame()
     {
         Time.timeScale = 0f;
         gameOverPanel.SetActive(true);

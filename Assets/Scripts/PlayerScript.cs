@@ -20,8 +20,11 @@ public class PlayerScript : MonoBehaviour
     private Lane currentLane;
 
     private const int MAX_FUEL = 50;
+    private const int DEFAULT_FUEL_DECREMENT_AMOUNT = 1;
+    private int fuelDecrementAmount;
     private int fuel;
     private float timeSinceLastFuelDecrement;
+
 
     private int score;
     private float timeSinceLastScoreIncrement;
@@ -48,6 +51,7 @@ public class PlayerScript : MonoBehaviour
         scoreText.text = "Score: " + score;
         finalScoreText.text = "Final Score: " + score;
 
+        fuelDecrementAmount = DEFAULT_FUEL_DECREMENT_AMOUNT;
         fuel = MAX_FUEL;
         fuelText.text = "Fuel: " + fuel;
     }
@@ -124,7 +128,7 @@ public class PlayerScript : MonoBehaviour
 
         if (timeSinceLastFuelDecrement >= 1f)
         {
-            fuel -= 1;
+            fuel -= fuelDecrementAmount;
             timeSinceLastFuelDecrement = 0f;
 
             if (fuel < 0)
@@ -174,6 +178,35 @@ public class PlayerScript : MonoBehaviour
         {
             isGrounded = true;
         }
+
+        if (collision.gameObject.CompareTag("BurningTile"))
+        {
+            fuelDecrementAmount = 10;
+            AudioManager.Instance.PlayBurningSfx();
+        }
+
+        if (collision.gameObject.CompareTag("SuppliesTile"))
+        {
+            RefillFuel();
+            AudioManager.Instance.PlaySuppliesSfx();
+        }
+
+        if (collision.gameObject.CompareTag("BoostTile"))
+        {
+            TileManager.Instance.BoostTileSpeed();
+            AudioManager.Instance.PlayBoostSfx();
+        }
+
+        if (collision.gameObject.CompareTag("StickyTile"))
+        {
+            TileManager.Instance.ResetTileSpeed();
+            AudioManager.Instance.PlayStickySfx();
+        }
+
+        if (collision.gameObject.CompareTag("EmptyTile"))
+        {
+            GameManager.Instance.EndGame();
+        }
     }
 
     private void OnCollisionExit(Collision collision)
@@ -187,6 +220,11 @@ public class PlayerScript : MonoBehaviour
         )
         {
             isGrounded = false;
+        }
+
+        if (collision.gameObject.CompareTag("BurningTile"))
+        {
+            fuelDecrementAmount = DEFAULT_FUEL_DECREMENT_AMOUNT;
         }
     }
 

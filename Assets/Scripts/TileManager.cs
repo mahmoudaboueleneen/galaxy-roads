@@ -126,4 +126,16 @@ public class TileManager : MonoBehaviour
 
         Destroy(tile);
     }
+
+    public void BoostTileSpeed()
+    {
+        moveSpeed = HIGH_SPEED;
+        speedText.text = "High Speed";
+    }
+
+    public void ResetTileSpeed()
+    {
+        moveSpeed = NORMAL_SPEED;
+        speedText.text = "Normal Speed";
+    }
 }
